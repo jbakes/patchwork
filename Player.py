@@ -34,26 +34,52 @@ class Player(object):
         
     def get_sm_status(self):
         """Prints the status of the player"""
-        print( '{}: b:{}, i:{}, e:{}, loc:{}'.format(self.name, self.buttons, self.income, self.empty_spaces, self.location))
+        print( '*** {}: b:{}, i:{}, e:{}, loc:{}'.format(self.name, self.buttons, self.income, self.empty_spaces, self.location))
         
         
+    def is_me(self, game):
+        if game.active_player.name == self.name:
+            return True
+        else:
+            return False
+
     def choose_move(self, board):
         """Asks the player for a move"""
         return 0
 
-    def get_score(self):
+    def get_score(self, chatter = False):
         """Returns the current score if the game ended now"""
-        return max(0, self.empty_spaces) * -2 + self.buttons
+        score = max(0, self.empty_spaces) * -2
+        score += self.buttons
+        score += self.get_time_left()
+        if chatter:
+            print('Points from:')
+            print('\tempty_spaces: {}'.format(self.empty_spaces * -2))
+            print('\tbuttons: {}'.format(self.buttons))
+            print('\ttime left: {}'.format(self.get_time_left()))
+        return score
     
-    def get_estimated_score(self, board):
+    def get_estimated_score(self, game_state, chatter = False):
         """Should estimeate a score based on time left, income remaining, and 1x1s with passing"""
-        score = self.get_score()
+        score = self.get_score(chatter)
+        
+        # count incomdes left
+        inc_count = 0
+        for inc in game_state.board.board_income:
+            if self.location < inc:
+                inc_count += 1
+        score += self.income * inc_count
+        if chatter:
+            print('\tincomes remaining: {}'.format(inc_count))
+            print('\tincome amount: {}'.format(self.income))
+            print('\tincome value: {}'.format(self.income * inc_count))
+            print('{}: estimated score is {}'.format(self.name, score))
         return score
 
     def get_legal_options(self, game):
         legal_moves = [-1]
         for i in range(3):
-            if game.is_legal(self, i):
+            if game.is_legal(i):
                 legal_moves.append(i)
         return legal_moves
 
