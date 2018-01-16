@@ -1,4 +1,10 @@
 import Board
+import Env
+
+
+def make():
+    return Env.Env()
+
 
 class Game(object):
     
@@ -6,6 +12,8 @@ class Game(object):
         self.player_one = p1
         self.player_two = p2
         self.board = Board.Board()
+        self.active_player = None
+        self.inactive_player = None
         
     def reset(self):
         self.player_one.reset()
@@ -93,7 +101,7 @@ class Game(object):
             self.receive_income(player)
         if self.earns_patch(player, pass_distance):
             print( '{} is given a patch'.format(player.name) )
-            self.add_piece(player, self.board.PATCH )
+            self.add_piece(player, self.board.PATCH)
         return
     
     def run_game(self):
