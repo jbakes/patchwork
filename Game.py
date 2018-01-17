@@ -1,5 +1,11 @@
 import Board
+import Env
 from copy import deepcopy
+
+
+def make():
+    return Env.Env()
+
 
 class Game(object):
     
@@ -11,7 +17,7 @@ class Game(object):
         self.active_player = self.player_one
         self.inactive_player = self.player_two
         self.chatter = True
-        
+
     def reset(self):
         self.player_one.reset()
         self.player_two.reset()
@@ -76,12 +82,12 @@ class Game(object):
         self.active_player.buttons += self.active_player.income
     
     def make_move(self, choice_ix):
-        '''Checks to see if the player receives an income or a patch and then adds a piece to the player's quilt
+        """Checks to see if the player receives an income or a patch and then adds a piece to the player's quilt
         player: the player adding the piece
         piece: the piece to be added to the quilt
         
         returns nothing.
-        '''
+        """
         piece = self.get_market_piece(choice_ix)
         if self.chatter:
             print('{} adds the {} piece to his board.'.format(self.active_player.name, piece.name))
@@ -101,22 +107,22 @@ class Game(object):
         return
 
     def make_pass(self):
-        '''Checks to see if the player receives an income or a patch and then moves the player as many passes as they need
+        """Checks to see if the player receives an income or a patch and then moves the player as many passes as they need
         player: the player adding the piece
         other_player: the player who is being caught up to
         
         returns nothing.
-        '''
+        """
         if self.chatter:
-            print('{} chooses to pass.'.format(self.active_player.name) )
+            print('{} chooses to pass.'.format(self.active_player.name))
         pass_distance = self.inactive_player.location - self.active_player.location + 1
         self.pass_turn(pass_distance)
         if self.earns_income(pass_distance):
             self.receive_income()
         if self.earns_patch(pass_distance):
             if self.chatter:
-                print( '{} is given a patch'.format(self.active_player.name) )
-            self.add_piece(self.board.PATCH )
+                print( '{} is given a patch'.format(self.active_player.name))
+            self.add_piece(self.board.PATCH)
 
         # always change turns on a pass
         self.alternate_turn()

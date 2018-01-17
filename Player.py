@@ -1,5 +1,6 @@
 from random import randint
 
+
 class Player(object):
     """Player class"""
     name = ''
@@ -35,8 +36,10 @@ class Player(object):
     def get_sm_status(self):
         """Prints the status of the player"""
         print( '*** {}: b:{}, i:{}, e:{}, loc:{}'.format(self.name, self.buttons, self.income, self.empty_spaces, self.location))
-        
-        
+
+    def get_status_map(self):
+        return {'b': self.buttons, 'i': self.income, 'e': self.empty_spaces, 'l': self.location}
+
     def is_me(self, game):
         if game.active_player.name == self.name:
             return True
@@ -83,6 +86,7 @@ class Player(object):
                 legal_moves.append(i)
         return legal_moves
 
+
 class HumanPlayer(Player):
     def __init__(self):
         Player.__init__(self, 'Human')
@@ -92,14 +96,16 @@ class HumanPlayer(Player):
         print(self.get_legal_options(game))
         return int( input() )
 
+
 class MaxBot(Player):
     def __init__(self, name='MaxBot'):
         Player.__init__(self, name)
     
-    def choose_move(self,game):
+    def choose_move(self, game):
         options = self.get_legal_options(game)
         print('{} has {} valid moves.'.format(self.name, len(options)))
         return max( options )
+
 
 class RandomPlayer(Player):
     def __init__(self, name='RandomBot'):
@@ -112,6 +118,7 @@ class RandomPlayer(Player):
         if len(options) > 1:
             rand_option = randint(1, len(options)-1)
         return options[rand_option]
+
 
 class PassBot(Player):
     def __init__(self, name='PassBot'):
