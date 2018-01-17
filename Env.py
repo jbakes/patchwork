@@ -32,9 +32,9 @@ class Env(object):
         if action == 4:
             return 'Complete'
         elif action == -1:
-            self.game.make_pass(self.game.active_player, self.game.inactive_player)
-        elif action >= 0 and self.game.is_legal(self.game.active_player, action):
-            self.game.make_move(self.game.active_player, action)
+            self.game.make_pass()
+        elif action >= 0 and self.game.is_legal(action):
+            self.game.make_move(action)
         else:
             print('illegal choice!')
             print('{} attempted to choose {}, but he only had {} buttons.'.format(
@@ -45,9 +45,9 @@ class Env(object):
         self.game.active_player, self.game.inactive_player = self.game.inactive_player, self.game.active_player
 
         obs_dict = {}
-        for k, v in self.game.active_player.get_status_map():
+        for k, v in self.game.active_player.get_status_map().items():
             obs_dict["active_{}".format(k)] = v
-        for k, v in self.game.inactive_player.get_status_map():
+        for k, v in self.game.inactive_player.get_status_map().items():
             obs_dict["inactive_{}".format(k)] = v
         obs = spaces.Dict(obs_dict)
         
