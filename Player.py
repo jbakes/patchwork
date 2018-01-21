@@ -8,6 +8,7 @@ class Player(object):
     income = 0
     empty_spaces = 81
     location = 0
+    pieces_added = []
     
     def __init__(self, name):
         """Player creation
@@ -20,6 +21,7 @@ class Player(object):
         self.income = 0
         self.empty_spaces = 81
         self.location = 0
+        self.pieces_added = []
 
     def get_time_left(self):
         return 53 - self.location
@@ -54,10 +56,10 @@ class Player(object):
         """Returns the current score if the game ended now"""
         score = max(0, self.empty_spaces) * -2
         score += self.buttons
-        score += self.get_time_left()
+        score += max(0, self.get_time_left())
         if chatter:
             print('Points from:')
-            print('\tempty_spaces: {}'.format(self.empty_spaces * -2))
+            print('\tempty_spaces: {} ({})'.format(self.empty_spaces, self.empty_spaces * -2))
             print('\tbuttons: {}'.format(self.buttons))
             print('\ttime left: {}'.format(self.get_time_left()))
         return score
@@ -65,7 +67,12 @@ class Player(object):
     def get_estimated_score(self, game_state, chatter = False):
         """Should estimeate a score based on time left, income remaining, and 1x1s with passing"""
         score = self.get_score(chatter)
-        
+
+        if game_state.game_over():
+            if chatter:
+                print('{}: final score is {}'.format(self.name, score))
+            return score
+
         # count incomdes left
         inc_count = 0
         for inc in game_state.board.board_income:
@@ -79,21 +86,12 @@ class Player(object):
             print('{}: estimated score is {}'.format(self.name, score))
         return score
 
-    def get_legal_options(self, game):
-        legal_moves = [-1]
-        for i in range(3):
-            if game.is_legal(i):
-                legal_moves.append(i)
-        return legal_moves
-
-
 class HumanPlayer(Player):
-    def __init__(self):
-        Player.__init__(self, 'Human')
+    def __init__(self, name='Human'):
+        Player.__init__(self, name)
     
     def choose_move(self, game):
-        game.board.print_market()
-        print(self.get_legal_options(game))
+        print(game.get_available_moves())
         return int( input() )
 
 
@@ -102,7 +100,7 @@ class MaxBot(Player):
         Player.__init__(self, name)
     
     def choose_move(self, game):
-        options = self.get_legal_options(game)
+        options = game.get_available_moves()
         print('{} has {} valid moves.'.format(self.name, len(options)))
         return max( options )
 
@@ -112,7 +110,7 @@ class RandomPlayer(Player):
         Player.__init__(self, name)
     
     def choose_move(self,game):
-        options = self.get_legal_options(game)
+        options = game.get_available_moves()
         print('{} has {} valid moves.'.format(self.name, len(options)))
         rand_option = 0
         if len(options) > 1:
